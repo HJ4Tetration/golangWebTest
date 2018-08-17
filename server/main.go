@@ -12,13 +12,13 @@ type myServer struct {
 }
 
 type message struct {
-	data1 int
-	data2 string
+	data1 int    `json:"data1"`
+	data2 string `json:"data2"`
 }
 
 type rmessage struct {
-	data1 string
-	data2 bool
+	data1 string `json:"data1"`
+	data2 bool   `json:"data2"`
 }
 type sv struct {
 	upgrader websocket.Upgrader
@@ -40,11 +40,13 @@ func (s *sv) wsHandler(w http.ResponseWriter, request *http.Request) {
 		fmt.Printf("cannot upgrade the websocket\n")
 		return
 	}
+	fmt.Printf("connection built\n")
 	go func() {
 		for {
 			messageType, mess, err := switchConnection.ReadMessage()
 			if err != nil {
 				fmt.Printf("error reading message from client\n")
+				fmt.Printf("%v\n", err)
 				return
 			}
 			var jsonMessage message
@@ -72,7 +74,7 @@ func main() {
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}}
-	port := "localhost:9999"
+	port := ":9999"
 	mux := http.NewServeMux()
 	mux.Handle("/", http.HandlerFunc(s.wsHandler))
 	fmt.Printf("trying to start server\n")
